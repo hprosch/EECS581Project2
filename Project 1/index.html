@@ -50,7 +50,19 @@
         value="10"
         oninput="document.getElementById('mineCount').textContent = this.value"
     >
-    <button onclick="main()">New Game</button>
+    <!--AI Difficulty Slider-->
+    <label for="difficultySlider">Difficulty: <span id="difficulty">Easy</span></label>
+    <input
+	type="range"
+	id="difficultySlider"
+	min="0"
+	max="2"
+	value="0"
+	oninput="document.getElementById('difficulty').textContent = updateDifficulty()"
+    >
+    <button onclick="userPlayer()">New Game: User Player</button>
+    <button onclick="tagTeam()">New Game: Tag-Team</button>
+    <button onclick="aiPlayer()">New Game: AI Player</button>
     <p id="status"></p>
     <p>Remaining Flags/Mines: <span id="flagCount">0</span></p>
     <table id="board"></table>
