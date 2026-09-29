@@ -3,7 +3,7 @@ var COLS = 10;
 var MAX_MINES = 20;
 var MIN_MINES = 10;
 var firstTurn = true;
-var board, mineGrid, flagGrid, gameOver, winState;
+var board, mineGrid, flagGrid, gameOver, winState, tag, difficulty;
 
 function initializeBoard(board){ //go thorugh every row and col, populating the board with 9s
     for (let row = 0; row < ROWS; row++) {
@@ -174,7 +174,26 @@ function buildGrid() {
                 if (e.ctrlKey) {
                     handleFlag(row, col); //Holding ctrl with left click will toggle flag
                 } else {
+		    //Checks if the tile has been revealed (unrevealed tiles have a board array value of 9)
+		    let check = board[row][col];
+	            //Handle the revealing process of the chosen tile
                     handleReveal(row, col);
+		    //Checks if the game is in Tag-Team mode, not won, not lost, and if the tile is not flagged and unrevealed
+                    if(tag && !winState && !gameOver && !flagGrid[row][col] && check == 9){
+	 		//If AI is in easy
+		        if(difficulty == 0){
+			    //Easy difficulty AI takes a turn after a valid revealing
+			    easy();
+			//If AI is in medium
+			}else if(difficulty == 1){
+			    //Medium  difficulty AI takes a turn after a valid revealing
+			    return; //Replace with medium function
+			//If AI is in hard
+			}else{
+			    //Hard difficulty AI takes a turn after a valid revealing
+			    return; //Replace with hard function
+			}
+                    }
                 }
             };
             td.ondblclick = (e) => {
@@ -315,6 +334,7 @@ function handleFlag(row, col) {
 
 function newGame() {
     // Create 2D arrays for board, mineGrid, and flagGrid
+    tag = false; //Automatically sets Tag-Team mode variable to false, will be set to true in tagTeam() function if Tag-Team mode is being played
     board = Array(ROWS);
     mineGrid = Array(ROWS);
     flagGrid = Array(ROWS);
@@ -339,7 +359,69 @@ function newGame() {
     document.getElementById('status').textContent = '';
 }
 
-function main() {
+function easy(){
+/*Algorithm for taking one turn under the Easy Difficulty AI*/
+    //Keep randomly choosing squares until a valid one reached
+    while(true){
+    	//Get random row number
+    	let row = Math.floor(Math.random() * ROWS);
+    	//Get random collumn number
+    	let col = Math.floor(Math.random() * COLS);
+    	//If chosen square not flagged or revealed
+    	if (!flagGrid[row][col] && board[row][col] == 9){
+            //Reveal randomly chosen grid square
+	    handleReveal(row,col);
+	    //End turn
+	    break;
+    	}
+    }
+}
+
+function aiPlayer(){
+/*Game mode for AI gameplay*/
+    //Resets the board and restarts the game
+    newGame();
+    //Sets difficulty of AI to difficulty value of difficultySlider in index.html
+    difficulty = Number(document.getElementById('difficultySlider').value);
+    //Easy Difficulty
+    if (difficulty == 0){
+	//Plays until game won or lost
+        while (winState == false && gameOver == false){    
+	    //Algorithm for taking a turn in Easy difficulty    
+            easy();
+        }
+    //Medium Difficulty
+    }else if (difficulty == 1){
+        return; //Replace with a medium difficulty algorithm function
+    //Hard Difficulty
+    }else{
+        return; //Replace with a hard difficulty algorithm function
+    }
+}
+
+function tagTeam(){
+/*Game mode for player and AI turn alternating*/
+    //Resets the board and restarts the game
+    newGame();
+    //Sets tag mode to true
+    tag = true;
+    //Sets difficulty of AI to difficulty value of difficultySlider in index.html
+    difficulty = Number(document.getElementById('difficultySlider').value);
+}
+
+function updateDifficulty(){
+/*Function for updating text on difficulty slider in index.html*/
+    //Sets difficulty to slider value (0,1,2)
+    difficulty = Number(document.getElementById('difficultySlider').value);
+    //0 is Easy, 1 is Medium, 2 is Hard
+    let difficultyArray = ['Easy', 'Medium', 'Hard'];
+    //Returns the string displayed in difficulty textContent in index.html
+    return difficultyArray[difficulty];
+}
+
+function userPlayer() {
+/*Game mode for single user player*/
+    //Resets the board and restarts the game
     newGame();
 }
 
