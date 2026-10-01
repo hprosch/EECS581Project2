@@ -375,7 +375,6 @@ function medium()
     {
         for(let j = 0; j < COLS; j++)
         {
-            //console.log(i + j);
             // if the tile is unrevealed we dont care about it
             if(board[i][j] != 9 && board[i][j] != 0)
             {
@@ -434,14 +433,12 @@ function medium()
                                 }
                             }
                         }
-                        console.log("found tiles to flag");
                         return; //End Turn
                     }
                 }
             }
         }
     }
-    console.log("found nothing");
     // If we find no valid tiles we just pick a random tile (easy)
     easy();
 }
