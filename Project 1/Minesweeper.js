@@ -187,7 +187,7 @@ function buildGrid() {
 			//If AI is in medium
 			}else if(difficulty == 1){
 			    //Medium  difficulty AI takes a turn after a valid revealing
-			    return; //Replace with medium function
+			    medium();
 			//If AI is in hard
 			}else{
 			    //Hard difficulty AI takes a turn after a valid revealing
@@ -359,6 +359,93 @@ function newGame() {
     document.getElementById('status').textContent = '';
 }
 
+/*
+Algorithm for taking one turn under the Medium Difficulty AI
+
+goes over all tiles one by one, if they are revealed we check if 
+    1) the # of adjacent unrevealed tiles + flagged tiles = the # of adjacent bomb, if so, flag all adjacent tiles
+    2) the # of adjacent flagged tiles = the # adjacent bombs, if so reveal all adjacent unflagged tiles
+if we find no tiles that meet these rules, we just call the easy algorithm to reveal a random tile
+
+- function and comment written by Ian Ruebelmann on 9/30/2026 @ 11:25pm
+*/
+function medium()
+{
+    for(let i = 0; i < ROWS; i++)
+    {
+        for(let j = 0; j < COLS; j++)
+        {
+            //console.log(i + j);
+            // if the tile is unrevealed we dont care about it
+            if(board[i][j] != 9 && board[i][j] != 0)
+            {
+                let adjacentFlags = 0;
+                let adjacentUnrevealedTiles = 0;
+                for (let tiles = 0; tiles < 9; tiles++) { 
+                    //starting from top left, go through every adjacent tile
+                    let rowPos = i - 1 + Math.floor(tiles / 3); 
+                    let colPos = j - 1 + (tiles % 3);
+        
+                    if ((rowPos >= 0 && rowPos < ROWS) && (colPos >= 0 && colPos < COLS))
+                    {
+                        if(flagGrid[rowPos][colPos])
+                        {
+                            adjacentFlags++; // Count flags
+                        }  
+                        else if(board[rowPos][colPos] == 9)
+                        {
+                            adjacentUnrevealedTiles++; // Count unrevealed tiles with no flags
+                        }
+                    }
+                }
+                if (adjacentUnrevealedTiles != 0)
+                {
+                    if(adjacentFlags == board[i][j])
+                    {
+                        // Reveal all adjacent unflagged tiles
+                        for (let tiles = 0; tiles < 9; tiles++) { 
+                            //starting from top left, go through every adjacent tile
+                            let rowPos = i - 1 + Math.floor(tiles / 3); 
+                            let colPos = j - 1 + (tiles % 3);
+
+                            if ((rowPos >= 0 && rowPos < ROWS) && (colPos >= 0 && colPos < COLS))
+                            {
+                                if(board[rowPos][colPos] == 9 && !flagGrid[rowPos][colPos])
+                                {
+                                    handleReveal(rowPos, colPos);
+                                }
+                            }
+                        }
+                        return; // End Turn
+                    }
+                    else if (adjacentFlags + adjacentUnrevealedTiles == board[i][j])
+                    {
+                        // Flag all adjacent unflagged tiles
+                        for (let tiles = 0; tiles < 9; tiles++) { 
+                            //starting from top left, go through every adjacent tile
+                            let rowPos = i - 1 + Math.floor(tiles / 3); 
+                            let colPos = j - 1 + (tiles % 3);
+
+                            if ((rowPos >= 0 && rowPos < ROWS) && (colPos >= 0 && colPos < COLS))
+                            {
+                                if(board[rowPos][colPos] == 9 && !flagGrid[rowPos][colPos])
+                                {
+                                    handleFlag(rowPos, colPos)
+                                }
+                            }
+                        }
+                        console.log("found tiles to flag");
+                        return; //End Turn
+                    }
+                }
+            }
+        }
+    }
+    console.log("found nothing");
+    // If we find no valid tiles we just pick a random tile (easy)
+    easy();
+}
+
 function easy(){
 /*Algorithm for taking one turn under the Easy Difficulty AI*/
     //Keep randomly choosing squares until a valid one reached
@@ -392,7 +479,10 @@ function aiPlayer(){
         }
     //Medium Difficulty
     }else if (difficulty == 1){
-        return; //Replace with a medium difficulty algorithm function
+        while (winState == false && gameOver == false){    
+	    //Algorithm for taking a turn in Easy difficulty    
+            medium();
+        }
     //Hard Difficulty
     }else{
         return; //Replace with a hard difficulty algorithm function
