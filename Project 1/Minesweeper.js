@@ -444,7 +444,7 @@ function medium()
 }
 
 function easy(){
-/*Algorithm for taking one turn under the Easy Difficulty AI*/
+/*Algorithm for taking one turn under the Easy Difficulty AI written by Wyatt Payne 9/29/26*/
     //Keep randomly choosing squares until a valid one reached
     while(true){
     	//Get random row number
@@ -462,7 +462,7 @@ function easy(){
 }
 
 function aiPlayer(){
-/*Game mode for AI gameplay*/
+/*Game mode for AI gameplay written by Wyatt Payne 9/29/26*/
     //Resets the board and restarts the game
     newGame();
     //Sets difficulty of AI to difficulty value of difficultySlider in index.html
@@ -487,7 +487,7 @@ function aiPlayer(){
 }
 
 function tagTeam(){
-/*Game mode for player and AI turn alternating*/
+/*Game mode for player and AI turn alternating written by Wyatt Payne 9/29/26*/
     //Resets the board and restarts the game
     newGame();
     //Sets tag mode to true
@@ -497,7 +497,8 @@ function tagTeam(){
 }
 
 function updateDifficulty(){
-/*Function for updating text on difficulty slider in index.html*/
+/*Function for updating text on difficulty slider in index.html
+  written by Wyatt Payne 9/29/26*/
     //Sets difficulty to slider value (0,1,2)
     difficulty = Number(document.getElementById('difficultySlider').value);
     //0 is Easy, 1 is Medium, 2 is Hard
@@ -507,7 +508,7 @@ function updateDifficulty(){
 }
 
 function userPlayer() {
-/*Game mode for single user player*/
+/*Game mode for single user player written by Wyatt Payne 9/29/26*/
     //Resets the board and restarts the game
     newGame();
 }
