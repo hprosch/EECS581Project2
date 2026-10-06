@@ -191,7 +191,7 @@ function buildGrid() {
 			//If AI is in hard
 			}else{
 			    //Hard difficulty AI takes a turn after a valid revealing
-			    return; //Replace with hard function
+                    hard();
 			}
                     }
                 }
@@ -360,6 +360,142 @@ function newGame() {
 }
 
 /*
+Algorithm for detecting a 1-2-1 pattern
+ */
+function hard() {
+    for (let i = 0; i < ROWS; i++) {
+
+        for (let j = 0; j < COLS; j++) {
+
+            if (board[i][j] == 2) { // only care about tiles with 2 bombs around them
+                // Vertical 1-2-1 test:
+                if (i + 1 != ROWS && i != 0) { // making sure we're not on an edge top/bottom
+                    if (board[i + 1][j] == 1 && board[i - 1][j] == 1) { // if the chosen tile follows the 2-1-2 pattern
+                        if (j + 1 == COLS) { // on right edge
+                            if (board[i][j - 1] == 9) { // if tile to our left is unrevealed
+                                handleFlag(i - 1, j - 1);
+                                handleFlag(i + 1, j - 1);
+                                handleReveal(i, j - 1); // Reveal the tile left of us
+                                return; // end our turn
+                            }
+                        }
+                        if (j == 0) { // if we're on left edge
+                            if (board[i][j + 1] == 9) { // if tile on our right is unrevealed
+                                handleFlag(i - 1, j + 1);
+                                handleFlag(i + 1, j + 1);
+                                handleReveal(i, j + 1); // Reveal the tile right of us
+                                return; // end our turn
+                            }
+
+                        } else { // if we're not on any edge
+                            if (board[i][j + 1] == 9) { // if right tile is unrevealed
+                                handleFlag(i - 1, j + 1);
+                                handleFlag(i + 1, j + 1);
+                                handleReveal(i, j + 1); // Reveal the tile right of us
+                                return; // end our turn
+                            }
+                            if (board[i][j - 1] == 9) {
+                                handleFlag(i - 1, j - 1);
+                                handleFlag(i + 1, j - 1);
+                                handleReveal(i, j - 1); // Reveal the tile right of us
+                                return; // end our turn
+                            }
+                        }
+                        //  if the program has reached this point without returning, the vertical 1-2-1 pattern has already been revealed
+
+                    }
+
+                }
+                // Now to test for horizontal 1-2-1 patterns
+                if (board[i][j] == 2) { // only care about tiles with 2 bombs around them
+                    // Vertical 1-2-1 test:
+                    if (i + 1 != ROWS && i != 0) { // making sure we're not on an edge top/bottom
+                        if (board[i + 1][j] == 1 && board[i - 1][j] == 1) { // if the chosen tile follows the 2-1-2 pattern
+                            if (j + 1 == COLS) { // on right edge
+                                if (board[i][j - 1] == 9) { // if tile to our left is unrevealed
+                                    handleFlag(i - 1, j - 1);
+                                    handleFlag(i + 1, j - 1);
+                                    handleReveal(i, j - 1); // Reveal the tile left of us
+                                    return; // end our turn
+                                }
+                            }
+                            if (j == 0) { // if we're on left edge
+                                if (board[i][j + 1] == 9) { // if tile on our right is unrevealed
+                                    handleFlag(i - 1, j + 1);
+                                    handleFlag(i + 1, j + 1);
+                                    handleReveal(i, j + 1); // Reveal the tile right of us
+                                    return; // end our turn
+                                }
+
+                            } else { // if we're not on any edge
+                                if (board[i][j + 1] == 9) { // if right tile is unrevealed
+                                    handleFlag(i - 1, j + 1);
+                                    handleFlag(i + 1, j + 1);
+                                    handleReveal(i, j + 1); // Reveal the tile right of us
+                                    return; // end our turn
+                                }
+                                if (board[i][j - 1] == 9) {
+                                    handleFlag(i - 1, j - 1);
+                                    handleFlag(i + 1, j - 1);
+                                    handleReveal(i, j - 1); // Reveal the tile right of us
+                                    return; // end our turn
+                                }
+                            }
+                            //  if the program has reached this point without returning, the horizontal
+                            //  1-2-1 pattern has already been revealed
+
+                        }
+
+                    }
+
+                    // At this point, we know there is no 1-2-1 horizontal pattern that hasn't been revealed for this tile
+                    // So we start looking for vertical at that same point
+                    if (j + 1 != COLS && j != 0) { // making sure we're not on an edge left/right
+                        if (board[i][j + 1] == 1 && board[i][j - 1] == 1) { // if the chosen tile follows the 2-1-2 pattern
+                            if (i + 1 == COLS) { // on bottom edge
+                                if (board[i - 1][j] == 9) { // if tile to our up is unrevealed
+                                    handleFlag(i - 1, j - 1);
+                                    handleFlag(i - 1, j + 1);
+                                    handleReveal(i - 1, j); // Reveal the tile up of us
+                                    return; // end our turn
+                                }
+                            }
+                            if (j == 0) { // if we're on top edge
+                                if (board[i + 1][j] == 9) { // if tile on our bottom is unrevealed
+                                    handleFlag(i + 1, j + 1);
+                                    handleFlag(i + 1, j - 1);
+                                    handleReveal(i + 1, j); // Reveal the below right of us
+                                    return; // end our turn
+                                }
+
+                            } else { // if we're not on any edge
+                                if (board[i - 1][j] == 9) { // if right tile is unrevealed
+                                    handleFlag(i - 1, j - 1);
+                                    handleFlag(i - 1, j + 1);
+                                    handleReveal(i - 1, j); // Reveal the tile up of us
+                                    return; // end our turn
+                                }
+                                if (board[i + 1][j] == 9) {
+                                    if (board[i + 1][j] == 9) { // if tile on our bottom is unrevealed
+                                        handleFlag(i + 1, j + 1);
+                                        handleFlag(i + 1, j - 1);
+                                        handleReveal(i + 1, j); // Reveal the below right of us
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+
+            }
+        }
+    }
+    // At this point, we know there is no 1-2-1 patterns, so we just pass it off to medium
+    medium();
+}
+/*
 Algorithm for taking one turn under the Medium Difficulty AI
 
 goes over all tiles one by one, if they are revealed we check if 
@@ -482,7 +618,10 @@ function aiPlayer(){
         }
     //Hard Difficulty
     }else{
-        return; //Replace with a hard difficulty algorithm function
+        while (winState == false && gameOver == false){
+            //Algorithm for taking a turn in Easy difficulty
+            hard();
+        }
     }
 }
 
