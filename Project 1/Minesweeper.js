@@ -3,7 +3,7 @@ var COLS = 10;
 var MAX_MINES = 20;
 var MIN_MINES = 10;
 var firstTurn = true;
-var board, mineGrid, flagGrid, gameOver, winState;
+var board, mineGrid, flagGrid, gameOver, winState, tag, difficulty;
 
 function initializeBoard(board){ //go thorugh every row and col, populating the board with 9s
     for (let row = 0; row < ROWS; row++) {
@@ -174,7 +174,26 @@ function buildGrid() {
                 if (e.ctrlKey) {
                     handleFlag(row, col); //Holding ctrl with left click will toggle flag
                 } else {
+		    //Checks if the tile has been revealed (unrevealed tiles have a board array value of 9)
+		    let check = board[row][col];
+	            //Handle the revealing process of the chosen tile
                     handleReveal(row, col);
+		    //Checks if the game is in Tag-Team mode, not won, not lost, and if the tile is not flagged and unrevealed
+                    if(tag && !winState && !gameOver && !flagGrid[row][col] && check == 9){
+	 		//If AI is in easy
+		        if(difficulty == 0){
+			    //Easy difficulty AI takes a turn after a valid revealing
+			    easy();
+			//If AI is in medium
+			}else if(difficulty == 1){
+			    //Medium  difficulty AI takes a turn after a valid revealing
+			    medium();
+			//If AI is in hard
+			}else{
+			    //Hard difficulty AI takes a turn after a valid revealing
+                    hard();
+			}
+                    }
                 }
             };
             td.ondblclick = (e) => {
@@ -315,6 +334,7 @@ function handleFlag(row, col) {
 
 function newGame() {
     // Create 2D arrays for board, mineGrid, and flagGrid
+    tag = false; //Automatically sets Tag-Team mode variable to false, will be set to true in tagTeam() function if Tag-Team mode is being played
     board = Array(ROWS);
     mineGrid = Array(ROWS);
     flagGrid = Array(ROWS);
@@ -339,7 +359,296 @@ function newGame() {
     document.getElementById('status').textContent = '';
 }
 
-function main() {
+/*
+Algorithm for detecting a 1-2-1 pattern
+ */
+function hard() {
+    for (let i = 0; i < ROWS; i++) {
+
+        for (let j = 0; j < COLS; j++) {
+
+            if (board[i][j] == 2) { // only care about tiles with 2 bombs around them
+                // Vertical 1-2-1 test:
+                if (i + 1 != ROWS && i != 0) { // making sure we're not on an edge top/bottom
+                    if (board[i + 1][j] == 1 && board[i - 1][j] == 1) { // if the chosen tile follows the 2-1-2 pattern
+                        if (j + 1 == COLS) { // on right edge
+                            if (board[i][j - 1] == 9) { // if tile to our left is unrevealed
+                                handleFlag(i - 1, j - 1);
+                                handleFlag(i + 1, j - 1);
+                                handleReveal(i, j - 1); // Reveal the tile left of us
+                                return; // end our turn
+                            }
+                        }
+                        if (j == 0) { // if we're on left edge
+                            if (board[i][j + 1] == 9) { // if tile on our right is unrevealed
+                                handleFlag(i - 1, j + 1);
+                                handleFlag(i + 1, j + 1);
+                                handleReveal(i, j + 1); // Reveal the tile right of us
+                                return; // end our turn
+                            }
+
+                        } else { // if we're not on any edge
+                            if (board[i][j + 1] == 9) { // if right tile is unrevealed
+                                handleFlag(i - 1, j + 1);
+                                handleFlag(i + 1, j + 1);
+                                handleReveal(i, j + 1); // Reveal the tile right of us
+                                return; // end our turn
+                            }
+                            if (board[i][j - 1] == 9) {
+                                handleFlag(i - 1, j - 1);
+                                handleFlag(i + 1, j - 1);
+                                handleReveal(i, j - 1); // Reveal the tile right of us
+                                return; // end our turn
+                            }
+                        }
+                        //  if the program has reached this point without returning, the vertical 1-2-1 pattern has already been revealed
+
+                    }
+
+                }
+                // Now to test for horizontal 1-2-1 patterns
+                if (board[i][j] == 2) { // only care about tiles with 2 bombs around them
+                    // Vertical 1-2-1 test:
+                    if (i + 1 != ROWS && i != 0) { // making sure we're not on an edge top/bottom
+                        if (board[i + 1][j] == 1 && board[i - 1][j] == 1) { // if the chosen tile follows the 2-1-2 pattern
+                            if (j + 1 == COLS) { // on right edge
+                                if (board[i][j - 1] == 9) { // if tile to our left is unrevealed
+                                    handleFlag(i - 1, j - 1);
+                                    handleFlag(i + 1, j - 1);
+                                    handleReveal(i, j - 1); // Reveal the tile left of us
+                                    return; // end our turn
+                                }
+                            }
+                            if (j == 0) { // if we're on left edge
+                                if (board[i][j + 1] == 9) { // if tile on our right is unrevealed
+                                    handleFlag(i - 1, j + 1);
+                                    handleFlag(i + 1, j + 1);
+                                    handleReveal(i, j + 1); // Reveal the tile right of us
+                                    return; // end our turn
+                                }
+
+                            } else { // if we're not on any edge
+                                if (board[i][j + 1] == 9) { // if right tile is unrevealed
+                                    handleFlag(i - 1, j + 1);
+                                    handleFlag(i + 1, j + 1);
+                                    handleReveal(i, j + 1); // Reveal the tile right of us
+                                    return; // end our turn
+                                }
+                                if (board[i][j - 1] == 9) {
+                                    handleFlag(i - 1, j - 1);
+                                    handleFlag(i + 1, j - 1);
+                                    handleReveal(i, j - 1); // Reveal the tile right of us
+                                    return; // end our turn
+                                }
+                            }
+                            //  if the program has reached this point without returning, the horizontal
+                            //  1-2-1 pattern has already been revealed
+
+                        }
+
+                    }
+
+                    // At this point, we know there is no 1-2-1 horizontal pattern that hasn't been revealed for this tile
+                    // So we start looking for vertical at that same point
+                    if (j + 1 != COLS && j != 0) { // making sure we're not on an edge left/right
+                        if (board[i][j + 1] == 1 && board[i][j - 1] == 1) { // if the chosen tile follows the 2-1-2 pattern
+                            if (i + 1 == COLS) { // on bottom edge
+                                if (board[i - 1][j] == 9) { // if tile to our up is unrevealed
+                                    handleFlag(i - 1, j - 1);
+                                    handleFlag(i - 1, j + 1);
+                                    handleReveal(i - 1, j); // Reveal the tile up of us
+                                    return; // end our turn
+                                }
+                            }
+                            if (j == 0) { // if we're on top edge
+                                if (board[i + 1][j] == 9) { // if tile on our bottom is unrevealed
+                                    handleFlag(i + 1, j + 1);
+                                    handleFlag(i + 1, j - 1);
+                                    handleReveal(i + 1, j); // Reveal the below right of us
+                                    return; // end our turn
+                                }
+
+                            } else { // if we're not on any edge
+                                if (board[i - 1][j] == 9) { // if right tile is unrevealed
+                                    handleFlag(i - 1, j - 1);
+                                    handleFlag(i - 1, j + 1);
+                                    handleReveal(i - 1, j); // Reveal the tile up of us
+                                    return; // end our turn
+                                }
+                                if (board[i + 1][j] == 9) {
+                                    if (board[i + 1][j] == 9) { // if tile on our bottom is unrevealed
+                                        handleFlag(i + 1, j + 1);
+                                        handleFlag(i + 1, j - 1);
+                                        handleReveal(i + 1, j); // Reveal the below right of us
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+
+            }
+        }
+    }
+    // At this point, we know there is no 1-2-1 patterns, so we just pass it off to medium
+    medium();
+}
+/*
+Algorithm for taking one turn under the Medium Difficulty AI
+
+goes over all tiles one by one, if they are revealed we check if 
+    1) the # of adjacent unrevealed tiles + flagged tiles = the # of adjacent bomb, if so, flag all adjacent tiles
+    2) the # of adjacent flagged tiles = the # adjacent bombs, if so reveal all adjacent unflagged tiles
+if we find no tiles that meet these rules, we just call the easy algorithm to reveal a random tile
+
+- function and comment written by Ian Ruebelmann on 9/30/2026 @ 11:25pm
+*/
+function medium()
+{
+    for(let i = 0; i < ROWS; i++)
+    {
+        for(let j = 0; j < COLS; j++)
+        {
+            // if the tile is unrevealed we dont care about it
+            if(board[i][j] != 9 && board[i][j] != 0)
+            {
+                let adjacentFlags = 0;
+                let adjacentUnrevealedTiles = 0;
+                for (let tiles = 0; tiles < 9; tiles++) { 
+                    //starting from top left, go through every adjacent tile
+                    let rowPos = i - 1 + Math.floor(tiles / 3); 
+                    let colPos = j - 1 + (tiles % 3);
+        
+                    if ((rowPos >= 0 && rowPos < ROWS) && (colPos >= 0 && colPos < COLS))
+                    {
+                        if(flagGrid[rowPos][colPos])
+                        {
+                            adjacentFlags++; // Count flags
+                        }  
+                        else if(board[rowPos][colPos] == 9)
+                        {
+                            adjacentUnrevealedTiles++; // Count unrevealed tiles with no flags
+                        }
+                    }
+                }
+                if (adjacentUnrevealedTiles != 0)
+                {
+                    if(adjacentFlags == board[i][j])
+                    {
+                        // Reveal all adjacent unflagged tiles
+                        for (let tiles = 0; tiles < 9; tiles++) { 
+                            //starting from top left, go through every adjacent tile
+                            let rowPos = i - 1 + Math.floor(tiles / 3); 
+                            let colPos = j - 1 + (tiles % 3);
+
+                            if ((rowPos >= 0 && rowPos < ROWS) && (colPos >= 0 && colPos < COLS))
+                            {
+                                if(board[rowPos][colPos] == 9 && !flagGrid[rowPos][colPos])
+                                {
+                                    handleReveal(rowPos, colPos);
+                                }
+                            }
+                        }
+                        return; // End Turn
+                    }
+                    else if (adjacentFlags + adjacentUnrevealedTiles == board[i][j])
+                    {
+                        // Flag all adjacent unflagged tiles
+                        for (let tiles = 0; tiles < 9; tiles++) { 
+                            //starting from top left, go through every adjacent tile
+                            let rowPos = i - 1 + Math.floor(tiles / 3); 
+                            let colPos = j - 1 + (tiles % 3);
+
+                            if ((rowPos >= 0 && rowPos < ROWS) && (colPos >= 0 && colPos < COLS))
+                            {
+                                if(board[rowPos][colPos] == 9 && !flagGrid[rowPos][colPos])
+                                {
+                                    handleFlag(rowPos, colPos)
+                                }
+                            }
+                        }
+                        return; //End Turn
+                    }
+                }
+            }
+        }
+    }
+    // If we find no valid tiles we just pick a random tile (easy)
+    easy();
+}
+
+function easy(){
+/*Algorithm for taking one turn under the Easy Difficulty AI written by Wyatt Payne 9/29/26*/
+    //Keep randomly choosing squares until a valid one reached
+    while(true){
+    	//Get random row number
+    	let row = Math.floor(Math.random() * ROWS);
+    	//Get random collumn number
+    	let col = Math.floor(Math.random() * COLS);
+    	//If chosen square not flagged or revealed
+    	if (!flagGrid[row][col] && board[row][col] == 9){
+            //Reveal randomly chosen grid square
+	    handleReveal(row,col);
+	    //End turn
+	    break;
+    	}
+    }
+}
+
+function aiPlayer(){
+/*Game mode for AI gameplay written by Wyatt Payne 9/29/26*/
+    //Resets the board and restarts the game
+    newGame();
+    //Sets difficulty of AI to difficulty value of difficultySlider in index.html
+    difficulty = Number(document.getElementById('difficultySlider').value);
+    //Easy Difficulty
+    if (difficulty == 0){
+	//Plays until game won or lost
+        while (winState == false && gameOver == false){    
+	    //Algorithm for taking a turn in Easy difficulty    
+            easy();
+        }
+    //Medium Difficulty
+    }else if (difficulty == 1){
+        while (winState == false && gameOver == false){    
+	    //Algorithm for taking a turn in Easy difficulty    
+            medium();
+        }
+    //Hard Difficulty
+    }else{
+        while (winState == false && gameOver == false){
+            //Algorithm for taking a turn in Easy difficulty
+            hard();
+        }
+    }
+}
+
+function tagTeam(){
+/*Game mode for player and AI turn alternating written by Wyatt Payne 9/29/26*/
+    //Resets the board and restarts the game
+    newGame();
+    //Sets tag mode to true
+    tag = true;
+    //Sets difficulty of AI to difficulty value of difficultySlider in index.html
+    difficulty = Number(document.getElementById('difficultySlider').value);
+}
+
+function updateDifficulty(){
+/*Function for updating text on difficulty slider in index.html
+  written by Wyatt Payne 9/29/26*/
+    //Sets difficulty to slider value (0,1,2)
+    difficulty = Number(document.getElementById('difficultySlider').value);
+    //0 is Easy, 1 is Medium, 2 is Hard
+    let difficultyArray = ['Easy', 'Medium', 'Hard'];
+    //Returns the string displayed in difficulty textContent in index.html
+    return difficultyArray[difficulty];
+}
+
+function userPlayer() {
+/*Game mode for single user player written by Wyatt Payne 9/29/26*/
+    //Resets the board and restarts the game
     newGame();
 }
 
