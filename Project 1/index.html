@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,26 +43,14 @@
     <!-- mine count -->
     <label for="mineSlider">Mines: <span id="mineCount">10</span></label>
     <!-- slider details -->
-    <input
-        type="range"
-        id="mineSlider"
-        min="10"
-        max="20"
-        value="10"
-        oninput="document.getElementById('mineCount').textContent = this.value"
-    >
+    <input type="range" id="mineSlider" min="10" max="20" value="10"
+        oninput="document.getElementById('mineCount').textContent = this.value">
     <!--AI Difficulty Slider-->
-	<!--Creates a slider that sets the difficulty of the AI player from 0-2 Easy-Hard
+    <!--Creates a slider that sets the difficulty of the AI player from 0-2 Easy-Hard
 	written by Wyatt Payne 9/29/26-->
     <label for="difficultySlider">Difficulty: <span id="difficulty">Easy</span></label>
-    <input
-	type="range"
-	id="difficultySlider"
-	min="0"
-	max="2"
-	value="0"
-	oninput="document.getElementById('difficulty').textContent = updateDifficulty()"
-    >
+    <input type="range" id="difficultySlider" min="0" max="2" value="0"
+        oninput="document.getElementById('difficulty').textContent = updateDifficulty()">
     <button onclick="userPlayer()">New Game: User Player</button>
     <button onclick="tagTeam()">New Game: Tag-Team</button>
     <button onclick="aiPlayer()">New Game: AI Player</button>
@@ -75,4 +64,23 @@
 
     <script src="Minesweeper.js"></script>
 </body>
+<script>
+    // run when the page is fully loaded
+    document.addEventListener("DOMContentLoaded", function () {
+        // set to true if you want to reset values on page reload
+        // false if you don't
+        let reset = true
+        // make sure values is properly initalized
+        if (!reset) {
+            // fixes innaccurate slider on reload
+            document.getElementById('difficulty').textContent = updateDifficulty();
+            // fixes inacurate mine count on reload
+            document.getElementById('mineCount').textContent = document.getElementById("mineSlider").value;
+        }
+        else {
+            document.getElementById('difficultySlider').value = "0";
+            document.getElementById("mineSlider").value = 10;
+        }
+    });</script>
+
 </html>
