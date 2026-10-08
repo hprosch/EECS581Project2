@@ -69,7 +69,7 @@
     document.addEventListener("DOMContentLoaded", function () {
         // set to true if you want to reset values on page reload
         // false if you don't
-        let reset = true
+        let reset = false
         // make sure values is properly initalized
         if (!reset) {
             // fixes innaccurate slider on reload
@@ -78,8 +78,12 @@
             document.getElementById('mineCount').textContent = document.getElementById("mineSlider").value;
         }
         else {
-            document.getElementById('difficultySlider').value = "0";
+            document.getElementById('difficultySlider').value = "1";
+
             document.getElementById("mineSlider").value = 10;
+            document.getElementById('difficulty').textContent = updateDifficulty();
+            document.getElementById('mineCount').textContent = document.getElementById("mineSlider").value;
+
         }
     });</script>
 
