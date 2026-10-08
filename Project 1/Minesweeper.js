@@ -4,6 +4,7 @@ var MAX_MINES = 20;
 var MIN_MINES = 10;
 var firstTurn = true;
 var board, mineGrid, flagGrid, gameOver, winState, tag, difficulty;
+var stopwatchInterval, stopwatchStart, revealAbilityAvailable, revealAbilityActive;
 
 function initializeBoard(board){ //go thorugh every row and col, populating the board with 9s
     for (let row = 0; row < ROWS; row++) {
@@ -138,6 +139,69 @@ function updateFlagCount() {
     document.getElementById('flagCount').textContent = mineCount - placedFlags;
 }
 
+/*Functions for tracking game duration written by the Project 2 team 10/5/26*/
+function updateStopwatch() {
+    let elapsedSeconds = Math.floor((Date.now() - stopwatchStart) / 1000);
+    let minutes = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
+    let seconds = (elapsedSeconds % 60).toString().padStart(2, '0');
+    document.getElementById('timer').textContent = minutes + ':' + seconds;
+}
+
+function stopStopwatch() {
+    clearInterval(stopwatchInterval);
+    updateStopwatch();
+}
+
+function activateRevealAbility() {
+    if (gameOver || !revealAbilityAvailable) return;
+    revealAbilityActive = !revealAbilityActive;
+    document.getElementById('revealButton').textContent = revealAbilityActive ? 'Select 3x3 Area' : 'Use 3x3 Reveal';
+}
+
+function revealAbilityTile(row, col) {
+    let adjacentMines = 0;
+    for (let rowPos = row - 1; rowPos <= row + 1; rowPos++) {
+        for (let colPos = col - 1; colPos <= col + 1; colPos++) {
+            if (rowPos >= 0 && rowPos < ROWS && colPos >= 0 && colPos < COLS && mineGrid[rowPos][colPos]) {
+                adjacentMines++;
+            }
+        }
+    }
+    board[row][col] = adjacentMines;
+}
+
+/*Ability for revealing a 3x3 area and flagging mines written by the Project 2 team 10/5/26*/
+function revealAbility(row, col) {
+    if (gameOver || !revealAbilityAvailable || !revealAbilityActive) return;
+
+    for (let rowPos = row - 1; rowPos <= row + 1; rowPos++) {
+        for (let colPos = col - 1; colPos <= col + 1; colPos++) {
+            if (rowPos >= 0 && rowPos < ROWS && colPos >= 0 && colPos < COLS && !flagGrid[rowPos][colPos]) {
+                if (mineGrid[rowPos][colPos]) {
+                    flagGrid[rowPos][colPos] = true;
+                } else if (board[rowPos][colPos] == 9) {
+                    revealAbilityTile(rowPos, colPos);
+                }
+            }
+        }
+    }
+
+    firstTurn = false;
+    revealAbilityAvailable = false;
+    revealAbilityActive = false;
+    document.getElementById('revealButton').textContent = '3x3 Reveal Used';
+    render();
+    updateFlagCount();
+
+    if (checkWin(board, mineGrid)) {
+        gameOver = true;
+        winState = true;
+        stopStopwatch();
+        render();
+        document.getElementById('status').textContent = 'Game Over: You Win!';
+    }
+}
+
 // Code chunk below replaces prompt-based input
 // ========================================================================================================================================
 
@@ -174,6 +238,11 @@ function buildGrid() {
                 if (e.ctrlKey) {
                     handleFlag(row, col); //Holding ctrl with left click will toggle flag
                 } else {
+            //Use the 3x3 reveal ability on the selected tile
+            if (revealAbilityActive) {
+            revealAbility(row, col);
+            return;
+            }
 		    //Checks if the tile has been revealed (unrevealed tiles have a board array value of 9)
 		    let check = board[row][col];
 	            //Handle the revealing process of the chosen tile
@@ -266,9 +335,11 @@ function handleReveal(row, col) {
         gameOver = true;
         revealAllMines();
         render();
+        stopStopwatch();
     } else if (checkWin(board, mineGrid)) {
         gameOver = true;
         winState = true;
+        stopStopwatch();
         render(); //Re-renders board so show unflagged bombs
     }
     if (gameOver) {
@@ -307,6 +378,7 @@ function handleDoubleReveal(row, col) { //Reveal surrounding tiles when a number
         gameOver = true;
         revealAllMines();
         render();
+        stopStopwatch();
         document.getElementById('status').textContent = 'Game Over: You Hit a Mine...';
         return;
     }
@@ -315,6 +387,7 @@ function handleDoubleReveal(row, col) { //Reveal surrounding tiles when a number
     if (checkWin(board, mineGrid)) { //If all non-mine cells are revealed after the surrounding tiles are opened, the player wins
         gameOver = true;
         winState = true;
+        stopStopwatch();
         render();
     }
 
@@ -353,6 +426,13 @@ function newGame() {
     firstTurn = true;
     gameOver = false;
     winState = false;
+    revealAbilityAvailable = true;
+    revealAbilityActive = false;
+    document.getElementById('revealButton').textContent = 'Use 3x3 Reveal';
+    stopwatchStart = Date.now();
+    clearInterval(stopwatchInterval);
+    stopwatchInterval = setInterval(updateStopwatch, 1000);
+    updateStopwatch();
     buildGrid();
     render();
     updateFlagCount();
