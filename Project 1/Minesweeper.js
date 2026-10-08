@@ -720,7 +720,6 @@ function aiPlayer() {
 			while (winState == false && gameOver == false) {
 				//Algorithm for taking a turn in Easy difficulty
 				hard();
-                x+=1;
 			}
 		}
 }
