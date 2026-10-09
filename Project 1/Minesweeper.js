@@ -502,7 +502,7 @@ function hard() {
 						// if the chosen tile follows the 2-1-2 pattern
 						if (j + 1 == COLS) {
 							// on right edge
-							if (board[i][j - 1] == 9) {
+							if (board[i][j - 1] == 9 && flagGrid[i][j - 1] == false) {
 								// if tile to our left is unrevealed
 								handleFlag(i - 1, j - 1);
 								handleFlag(i + 1, j - 1);
@@ -512,7 +512,7 @@ function hard() {
 						}
 						else if (j == 0) {
 							// if we're on left edge
-							if (board[i][j + 1] == 9) {
+							if (board[i][j + 1] == 9 && flagGrid[i][j + 1] == false && flagGrid[i-1][j + 1] == false && flagGrid[i+1][j + 1] == false) {
 								// if tile on our right is unrevealed
 								handleFlag(i - 1, j + 1);
 								handleFlag(i + 1, j + 1);
@@ -522,7 +522,7 @@ function hard() {
 						} else {
 							// if we're not on any edge
                             if(j+1<=COLS){
-							if (board[i][j + 1] == 9) {
+							if (board[i][j + 1] == 9 && flagGrid[i][j + 1] == false && flagGrid[i-1][j + 1] == false && flagGrid[i+1][j + 1] == false) {
 								// if right tile is unrevealed
 								handleFlag(i - 1, j + 1);
 								handleFlag(i + 1, j + 1);
@@ -531,7 +531,7 @@ function hard() {
 							}
                             }
                             if(j-1>=0){
-							if (board[i][j - 1] == 9) {
+							if (board[i][j - 1] == 9 && flagGrid[i][j - 1] == false && flagGrid[i-1][j - 1] == false && flagGrid[i+1][j - 1] == false) {
 								handleFlag(i - 1, j - 1);
 								handleFlag(i + 1, j - 1);
 								handleReveal(i, j - 1); // Reveal the tile right of us
@@ -550,7 +550,7 @@ function hard() {
 						// if the chosen tile follows the 2-1-2 pattern
 						if (i + 1 == ROWS) {
 							// on bottom edge
-							if (board[i - 1][j] == 9) {
+							if (board[i - 1][j] == 9 && flagGrid[i - 1][j] == false && flagGrid[i - 1][j-1] == false && flagGrid[i - 1][j+1] == false) {
 								// if tile to our up is unrevealed
 								handleFlag(i - 1, j - 1);
 								handleFlag(i - 1, j + 1);
@@ -560,7 +560,7 @@ function hard() {
 						}
 						else if (i == 0) {
 							// if we're on top edge
-							if ( board[i + 1][j] == 9) {
+							if ( board[i + 1][j] == 9 && flagGrid[i + 1][j] == false && flagGrid[i + 1][j-1] == false && flagGrid[i + 1][j+1] == false) {
 								// if tile on our bottom is unrevealed
 								handleFlag(i + 1, j + 1);
 								handleFlag(i + 1, j - 1);
@@ -570,7 +570,7 @@ function hard() {
 						} else {
 							// if we're not on any edge
                             if(i+1<=ROWS){
-							if (board[i - 1][j] == 9) {
+							if (board[i - 1][j] == 9 && flagGrid[i - 1][j] == false && flagGrid[i - 1][j-1] == false && flagGrid[i - 1][j+1] == false) {
 								// if right tile is unrevealed
 								handleFlag(i - 1, j - 1);
 								handleFlag(i - 1, j + 1);
@@ -579,7 +579,7 @@ function hard() {
 							}
                         }
                         if(i-1>=0){
-							if (board[i + 1][j] == 9) {
+							if (board[i + 1][j] == 9 && flagGrid[i + 1][j] == false && flagGrid[i + 1][j-1] == false && flagGrid[i + 1][j+1] == false) {
 									// if tile on our bottom is unrevealed
 									handleFlag(i + 1, j + 1);
 									handleFlag(i + 1, j - 1);
