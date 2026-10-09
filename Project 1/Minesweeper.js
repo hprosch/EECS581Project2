@@ -495,48 +495,77 @@ function hard() {
 		for (let j = 0; j < COLS; j++) {
 			if (board[i][j] == 2) {
 				// only care about tiles with 2 bombs around them
-				// Vertical 1-2-1 test:
-				if (i + 1 != ROWS && i != 0) {
-					// making sure we're not on an edge top/bottom
-					if (board[i + 1][j] == 1 && board[i - 1][j] == 1) {
-						// if the chosen tile follows the 2-1-2 pattern
-						if (j + 1 == COLS) {
-							// on right edge
-							if (board[i][j - 1] == 9 && flagGrid[i][j - 1] == false) {
-								// if tile to our left is unrevealed
-								handleFlag(i - 1, j - 1);
-								handleFlag(i + 1, j - 1);
-								handleReveal(i, j - 1); // Reveal the tile left of us
-								return; // end our turn
-							}
+				
+				// checking for corners flag edge case
+				// Section added by Ian Ruebelmann on 10/9/26
+				let corners = 0;
+				// A for loop to count the # of unrevealed or flagged corners, if it's greater than 2 we can use it
+				for(let k = 0; k <= 4; k++)
+				{
+					let x = (k % 2) * 2 - 1 + j;
+					let y = Math.floor(k / 2) * 2 - 1 + i;
+
+					// check out of bounds
+					if (x < 0 || x >= COLS || y < 0 || y >= ROWS)
+					{
+						// do nothing... I refuse to use my brain and reverse this boolean statement
+					}
+					else
+					{
+						// count a corner
+						if(board[y][x] == 9 || flagGrid[y][x] == true) 
+						{
+							corners += 1;
 						}
-						else if (j == 0) {
-							// if we're on left edge
-							if (board[i][j + 1] == 9 && flagGrid[i][j + 1] == false && flagGrid[i-1][j + 1] == false && flagGrid[i+1][j + 1] == false) {
-								// if tile on our right is unrevealed
-								handleFlag(i - 1, j + 1);
-								handleFlag(i + 1, j + 1);
-								handleReveal(i, j + 1); // Reveal the tile right of us
-								return; // end our turn
+					}
+				}
+
+
+				// We had 2 unrevealed or flagged corners
+				if (corners == 2)
+				{
+					// Vertical 1-2-1 test:
+					if (i + 1 != ROWS && i != 0) {
+						// making sure we're not on an edge top/bottom
+						if (board[i + 1][j] == 1 && board[i - 1][j] == 1) {
+							// if the chosen tile follows the 2-1-2 pattern
+							if (j + 1 == COLS) {
+								// on right edge
+								if (board[i][j - 1] == 9 && flagGrid[i][j - 1] == false) {
+									// if tile to our left is unrevealed
+									handleFlag(i - 1, j - 1);
+									handleFlag(i + 1, j - 1);
+									handleReveal(i, j - 1); // Reveal the tile left of us
+									return; // end our turn
+								}
 							}
-						} else {
-							// if we're not on any edge
-                            if(j+1<=COLS){
-							if (board[i][j + 1] == 9 && flagGrid[i][j + 1] == false && flagGrid[i-1][j + 1] == false && flagGrid[i+1][j + 1] == false) {
-								// if right tile is unrevealed
-								handleFlag(i - 1, j + 1);
-								handleFlag(i + 1, j + 1);
-								handleReveal(i, j + 1); // Reveal the tile right of us
-								return; // end our turn
-							}
-                            }
-                            if(j-1>=0){
-							if (board[i][j - 1] == 9 && flagGrid[i][j - 1] == false && flagGrid[i-1][j - 1] == false && flagGrid[i+1][j - 1] == false) {
-								handleFlag(i - 1, j - 1);
-								handleFlag(i + 1, j - 1);
-								handleReveal(i, j - 1); // Reveal the tile right of us
-								return; // end our turn
-							}
+							else if (j == 0) {
+								// if we're on left edge
+								if (board[i][j + 1] == 9 && flagGrid[i][j + 1] == false && flagGrid[i-1][j + 1] == false && flagGrid[i+1][j + 1] == false) {
+									// if tile on our right is unrevealed
+									handleFlag(i - 1, j + 1);
+									handleFlag(i + 1, j + 1);
+									handleReveal(i, j + 1); // Reveal the tile right of us
+									return; // end our turn
+								}
+							} else {
+								// if we're not on any edge
+                            	if(j+1<=COLS){
+								if (board[i][j + 1] == 9 && flagGrid[i][j + 1] == false && flagGrid[i-1][j + 1] == false && flagGrid[i+1][j + 1] == false) {
+									// if right tile is unrevealed
+									handleFlag(i - 1, j + 1);
+									handleFlag(i + 1, j + 1);
+									handleReveal(i, j + 1); // Reveal the tile right of us
+									return; // end our turn
+								}
+                            	}
+                            	if(j-1>=0){
+								if (board[i][j - 1] == 9 && flagGrid[i][j - 1] == false && flagGrid[i-1][j - 1] == false && flagGrid[i+1][j - 1] == false) {
+									handleFlag(i - 1, j - 1);
+									handleFlag(i + 1, j - 1);
+									handleReveal(i, j - 1); // Reveal the tile right of us
+									return; // end our turn
+								}
                             }
 						}
 						//  if the program has reached this point without returning, the vertical 1-2-1 pattern has already been revealed
@@ -589,6 +618,8 @@ function hard() {
 								
 							}
 						}
+				}
+				
                         }
 					}
 				}
