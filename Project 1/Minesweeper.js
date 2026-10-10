@@ -3,7 +3,7 @@ var COLS = 10;
 var MAX_MINES = 20;
 var MIN_MINES = 10;
 var firstTurn = true;
-var board, mineGrid, flagGrid, gameOver, winState, tag, difficulty;
+var board, mineGrid, flagGrid, gameOver, winState, tag, ai, difficulty;
 var stopwatchInterval, stopwatchStart, revealAbilityAvailable, revealAbilityActive;
 
 function initializeBoard(board){ //go thorugh every row and col, populating the board with 9s
@@ -249,6 +249,7 @@ function buildGrid() {
                     handleReveal(row, col);
 		    //Checks if the game is in Tag-Team mode, not won, not lost, and if the tile is not flagged and unrevealed
                     if(tag && !winState && !gameOver && !flagGrid[row][col] && check == 9){
+			ai = true;
 	 		//If AI is in easy
 		        if(difficulty == 0){
 			    //Easy difficulty AI takes a turn after a valid revealing
@@ -262,6 +263,7 @@ function buildGrid() {
 			    //Hard difficulty AI takes a turn after a valid revealing
                     hard();
 			}
+			ai = false;
                     }
                 }
             };
@@ -300,8 +302,11 @@ function render() {
                 }
             // mine
             } else if (val === -1) {
-                td.className = 'revlealed';
-                td.textContent = '💥'; 
+                td.textContent = '💥';
+	    // mine ai hit
+	    } else if (val === -2) {
+		td.className = 'aiHit';
+ 		td.textContent = '💥';
             // safe cell
             } else {
                 td.className = 'revealed';
@@ -313,11 +318,16 @@ function render() {
     }
 }
 
-function revealAllMines() {
+function revealAllMines(aiRow, aiCol) {
     for (let row = 0; row < ROWS; row++) {
         for (let col = 0; col < COLS; col++) {
             if (mineGrid[row][col]) {
-                board[row][col] = -1; // -1 represents a mine
+		//If the ai hit the mine
+		if(ai && row === aiRow && col === aiCol){
+		    board[row][col] = -2; //represents the mine the algorithm hit
+		}else{
+                	board[row][col] = -1; // -1 represents a mine
+		}
             }
         }
     }
@@ -333,7 +343,7 @@ function handleReveal(row, col) {
     // revealResult === 2 reprensents hitting a mine
     if (revealResult === 2) {
         gameOver = true;
-        revealAllMines();
+        revealAllMines(row, col);
         render();
         stopStopwatch();
     } else if (checkWin(board, mineGrid)) {
@@ -343,7 +353,11 @@ function handleReveal(row, col) {
         render(); //Re-renders board so show unflagged bombs
     }
     if (gameOver) {
-        document.getElementById('status').textContent = `Game Over: You ${checkWin(board, mineGrid) ? "Win!" : "Hit a Mine..."}`;
+	if(ai){
+            document.getElementById('status').textContent = `Game Over: The AI ${checkWin(board, mineGrid) ? "Wins!" : "Hit a Mine..."}`;
+	}else{
+            document.getElementById('status').textContent = `Game Over: You ${checkWin(board, mineGrid) ? "Win!" : "Hit a Mine..."}`;
+	}
     } else {
         document.getElementById('status').textContent = '';
     }
@@ -379,7 +393,12 @@ function handleDoubleReveal(row, col) { //Reveal surrounding tiles when a number
         revealAllMines();
         render();
         stopStopwatch();
-        document.getElementById('status').textContent = 'Game Over: You Hit a Mine...';
+	if(ai){
+	    document.getElementById('status').textContent = 'Game Over: The AI Hit a Mine...';
+
+	}else{
+            document.getElementById('status').textContent = 'Game Over: You Hit a Mine...';
+	}
         return;
     }
 
@@ -408,6 +427,8 @@ function handleFlag(row, col) {
 function newGame() {
     // Create 2D arrays for board, mineGrid, and flagGrid
     tag = false; //Automatically sets Tag-Team mode variable to false, will be set to true in tagTeam() function if Tag-Team mode is being played
+    //Sets the ai varaible to false, will be set to true in AIPlayer and TagTeam modes when relevant
+    ai = false;
     board = Array(ROWS);
     mineGrid = Array(ROWS);
     flagGrid = Array(ROWS);
@@ -681,6 +702,8 @@ function aiPlayer(){
 /*Game mode for AI gameplay written by Wyatt Payne 9/29/26*/
     //Resets the board and restarts the game
     newGame();
+    //Sets the ai variable to true to track that the algorithm is playing
+    ai = true;
     //Sets difficulty of AI to difficulty value of difficultySlider in index.html
     difficulty = Number(document.getElementById('difficultySlider').value);
     //Easy Difficulty
