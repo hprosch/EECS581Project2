@@ -3,7 +3,7 @@ var COLS = 10;
 var MAX_MINES = 20;
 var MIN_MINES = 10;
 var firstTurn = true;
-var board, mineGrid, flagGrid, gameOver, winState, tag, difficulty;
+var board, mineGrid, flagGrid, gameOver, winState, tag, ai, difficulty;
 var stopwatchInterval,
 	stopwatchStart,
 	revealAbilityAvailable,
@@ -264,58 +264,54 @@ function buildGrid() {
 		rowLabel.textContent = row + 1;
 		tr.appendChild(rowLabel);
 
-		for (let col = 0; col < COLS; col++) {
-			const td = document.createElement("td"); // table cell data
-			td.id = "cell-" + row + "-" + col; // Unique ID for each cell
-			td.onclick = (e) => {
-				if (e.ctrlKey) {
-					handleFlag(row, col); //Holding ctrl with left click will toggle flag
-				} else {
-					//Use the 3x3 reveal ability on the selected tile
-					if (revealAbilityActive) {
-						revealAbility(row, col);
-						return;
-					}
-					//Checks if the tile has been revealed (unrevealed tiles have a board array value of 9)
-					let check = board[row][col];
-					//Handle the revealing process of the chosen tile
-					handleReveal(row, col);
-					//Checks if the game is in Tag-Team mode, not won, not lost, and if the tile is not flagged and unrevealed
-					if (
-						tag &&
-						!winState &&
-						!gameOver &&
-						!flagGrid[row][col] &&
-						check == 9
-					) {
-						//If AI is in easy
-						if (difficulty == 0) {
-							//Easy difficulty AI takes a turn after a valid revealing
-							easy();
-							//If AI is in medium
-						} else if (difficulty == 1) {
-							//Medium  difficulty AI takes a turn after a valid revealing
-							medium();
-							//If AI is in hard
-						} else {
-							//Hard difficulty AI takes a turn after a valid revealing
-							hard();
-						}
-					}
-				}
-			};
-			td.ondblclick = (e) => {
-				if (e.ctrlKey) {
-					return; //Handles double reveal
-				}
-				handleDoubleReveal(row, col);
-			};
-			td.oncontextmenu = (e) => {
-				e.preventDefault(); // allows right click without browser menu popup
-				handleFlag(row, col);
-			};
-			tr.appendChild(td); // append cell to row
-		}
+        for (let col = 0; col < COLS; col++) {
+            const td = document.createElement('td'); // table cell data
+            td.id = 'cell-' + row + '-' + col; // Unique ID for each cell
+            td.onclick = (e) => {
+                if (e.ctrlKey) {
+                    handleFlag(row, col); //Holding ctrl with left click will toggle flag
+                } else {
+            //Use the 3x3 reveal ability on the selected tile
+            if (revealAbilityActive) {
+            revealAbility(row, col);
+            return;
+            }
+		    //Checks if the tile has been revealed (unrevealed tiles have a board array value of 9)
+		    let check = board[row][col];
+	            //Handle the revealing process of the chosen tile
+                    handleReveal(row, col);
+		    //Checks if the game is in Tag-Team mode, not won, not lost, and if the tile is not flagged and unrevealed
+                    if(tag && !winState && !gameOver && !flagGrid[row][col] && check == 9){
+			ai = true;
+	 		//If AI is in easy
+		        if(difficulty == 0){
+			    //Easy difficulty AI takes a turn after a valid revealing
+			    easy();
+			//If AI is in medium
+			}else if(difficulty == 1){
+			    //Medium  difficulty AI takes a turn after a valid revealing
+			    medium();
+			//If AI is in hard
+			}else{
+			    //Hard difficulty AI takes a turn after a valid revealing
+                    hard();
+			}
+			ai = false;
+                    }
+                }
+            };
+            td.ondblclick = (e) => {
+                if (e.ctrlKey) {
+                    return; //Handles double reveal
+                }
+                handleDoubleReveal(row, col);
+            }
+            td.oncontextmenu = (e) => {
+                e.preventDefault(); // allows right click without browser menu popup
+                handleFlag(row, col);
+            };
+            tr.appendChild(td); // append cell to row
+        }
 
 		gameBoard.appendChild(tr); // append row to table
 	}
@@ -330,36 +326,44 @@ function render() {
 			td.className = "";
 			td.textContent = "";
 
-			// flag
-			if (val === 9) {
-				if (flagGrid[row][col]) {
-					td.textContent = "🚩"; // changed F to be flag emoji
-				} else if (winState && mineGrid[row][col]) {
-					td.textContent = "💣"; // If bombs unflagged after win, they're marked with bomb icon
-				}
-				// mine
-			} else if (val === -1) {
-				td.className = "revlealed";
-				td.textContent = "💥";
-				// safe cell
-			} else {
-				td.className = "revealed";
-				if (val > 0) {
-					td.textContent = val;
-				}
-			}
-		}
-	}
+            // flag
+            if (val === 9) {
+                if (flagGrid[row][col]) {
+                    td.textContent = '🚩'; // changed F to be flag emoji
+                } else if (winState && mineGrid[row][col]) {
+                    td.textContent = '💣'; // If bombs unflagged after win, they're marked with bomb icon
+                }
+            // mine
+            } else if (val === -1) {
+                td.textContent = '💥';
+	    // mine ai hit
+	    } else if (val === -2) {
+		td.className = 'aiHit';
+ 		td.textContent = '💥';
+            // safe cell
+            } else {
+                td.className = 'revealed';
+                if (val > 0) {
+                    td.textContent = val;
+                }
+            }
+        }
+    }
 }
 
-function revealAllMines() {
-	for (let row = 0; row < ROWS; row++) {
-		for (let col = 0; col < COLS; col++) {
-			if (mineGrid[row][col]) {
-				board[row][col] = -1; // -1 represents a mine
-			}
+function revealAllMines(aiRow, aiCol) {
+    for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLS; col++) {
+            if (mineGrid[row][col]) {
+		//If the ai hit the mine
+		if(ai && row === aiRow && col === aiCol){
+		    board[row][col] = -2; //represents the mine the algorithm hit
+		}else{
+                	board[row][col] = -1; // -1 represents a mine
 		}
-	}
+            }
+        }
+    }
 }
 
 function handleReveal(row, col) {
@@ -372,24 +376,27 @@ function handleReveal(row, col) {
 	let revealResult = revealTile(board, mineGrid, row, col);
 	render();
 
-	// revealResult === 2 reprensents hitting a mine
-	if (revealResult === 2) {
-		gameOver = true;
-		revealAllMines();
-		render();
-		stopStopwatch();
-	} else if (checkWin(board, mineGrid)) {
-		gameOver = true;
-		winState = true;
-		stopStopwatch();
-		render(); //Re-renders board so show unflagged bombs
+    // revealResult === 2 reprensents hitting a mine
+    if (revealResult === 2) {
+        gameOver = true;
+        revealAllMines(row, col);
+        render();
+        stopStopwatch();
+    } else if (checkWin(board, mineGrid)) {
+        gameOver = true;
+        winState = true;
+        stopStopwatch();
+        render(); //Re-renders board so show unflagged bombs
+    }
+    if (gameOver) {
+	if(ai){
+            document.getElementById('status').textContent = `Game Over: The AI ${checkWin(board, mineGrid) ? "Wins!" : "Hit a Mine..."}`;
+	}else{
+            document.getElementById('status').textContent = `Game Over: You ${checkWin(board, mineGrid) ? "Win!" : "Hit a Mine..."}`;
 	}
-	if (gameOver) {
-		document.getElementById("status").textContent =
-			`Game Over: You ${checkWin(board, mineGrid) ? "Win!" : "Hit a Mine..."}`;
-	} else {
-		document.getElementById("status").textContent = "";
-	}
+    } else {
+        document.getElementById('status').textContent = '';
+    }
 }
 
 function handleDoubleReveal(row, col) {
@@ -418,16 +425,19 @@ function handleDoubleReveal(row, col) {
 		}
 	}
 
-	if (hitMine) {
-		//If a mine is revealed in the surrounding tiles, the game ends
-		gameOver = true;
-		revealAllMines();
-		render();
-		stopStopwatch();
-		document.getElementById("status").textContent =
-			"Game Over: You Hit a Mine...";
-		return;
+    if (hitMine) { //If a mine is revealed in the surrounding tiles, the game ends
+        gameOver = true;
+        revealAllMines();
+        render();
+        stopStopwatch();
+	if(ai){
+	    document.getElementById('status').textContent = 'Game Over: The AI Hit a Mine...';
+
+	}else{
+            document.getElementById('status').textContent = 'Game Over: You Hit a Mine...';
 	}
+        return;
+    }
 
 	render();
 	if (checkWin(board, mineGrid)) {
@@ -454,19 +464,21 @@ function handleFlag(row, col) {
 }
 
 function newGame() {
-	// Create 2D arrays for board, mineGrid, and flagGrid
-	tag = false; //Automatically sets Tag-Team mode variable to false, will be set to true in tagTeam() function if Tag-Team mode is being played
-	board = Array(ROWS);
-	mineGrid = Array(ROWS);
-	flagGrid = Array(ROWS);
-	for (let i = 0; i < ROWS; i++) {
-		board[i] = Array(COLS);
-		mineGrid[i] = Array(COLS);
-		flagGrid[i] = Array(COLS);
-	}
-	board = initializeBoard(board);
-	mineGrid = initializeMineGrid(mineGrid);
-	flagGrid = initializeFlagGrid(flagGrid);
+    // Create 2D arrays for board, mineGrid, and flagGrid
+    tag = false; //Automatically sets Tag-Team mode variable to false, will be set to true in tagTeam() function if Tag-Team mode is being played
+    //Sets the ai varaible to false, will be set to true in AIPlayer and TagTeam modes when relevant
+    ai = false;
+    board = Array(ROWS);
+    mineGrid = Array(ROWS);
+    flagGrid = Array(ROWS);
+    for (let i = 0; i < ROWS; i++) {
+        board[i] = Array(COLS);
+        mineGrid[i] = Array(COLS);
+        flagGrid[i] = Array(COLS);
+    }
+    board = initializeBoard(board);
+    mineGrid = initializeMineGrid(mineGrid);
+    flagGrid = initializeFlagGrid(flagGrid);
 
 	let mineCount = Number(document.getElementById("mineSlider").value); // gets selected mine count
 	mineGrid = placeMines(mineGrid, mineCount); // place selected number of mines (1-20)
@@ -727,32 +739,34 @@ function easy() {
 	}
 }
 
-function aiPlayer() {
-	/*Game mode for AI gameplay written by Wyatt Payne 9/29/26*/
-	//Resets the board and restarts the game
-	newGame();
-	//Sets difficulty of AI to difficulty value of difficultySlider in index.html
-	difficulty = Number(document.getElementById("difficultySlider").value);
-	//Easy Difficulty
-		if (difficulty == 0) {
-			//Plays until game won or lost
-			while (winState == false && gameOver == false) {
-				//Algorithm for taking a turn in Easy difficulty
-				easy();
-			}
-			//Medium Difficulty
-		} else if (difficulty == 1) {
-			while (winState == false && gameOver == false) {
-				//Algorithm for taking a turn in Easy difficulty
-				medium();
-			}
-			//Hard Difficulty
-		} else {
-			while (winState == false && gameOver == false) {
-				//Algorithm for taking a turn in Easy difficulty
-				hard();
-			}
-		}
+function aiPlayer(){
+/*Game mode for AI gameplay written by Wyatt Payne 9/29/26*/
+    //Resets the board and restarts the game
+    newGame();
+    //Sets the ai variable to true to track that the algorithm is playing
+    ai = true;
+    //Sets difficulty of AI to difficulty value of difficultySlider in index.html
+    difficulty = Number(document.getElementById('difficultySlider').value);
+    //Easy Difficulty
+    if (difficulty == 0){
+	//Plays until game won or lost
+        while (winState == false && gameOver == false){    
+	    //Algorithm for taking a turn in Easy difficulty    
+            easy();
+        }
+    //Medium Difficulty
+    }else if (difficulty == 1){
+        while (winState == false && gameOver == false){    
+	    //Algorithm for taking a turn in Easy difficulty    
+            medium();
+        }
+    //Hard Difficulty
+    }else{
+        while (winState == false && gameOver == false){
+            //Algorithm for taking a turn in Easy difficulty
+            hard();
+        }
+    }
 }
 
 function tagTeam() {
