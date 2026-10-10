@@ -1,0 +1,9 @@
+Maybe bugs:
+When page is reloaded sliders stay at their same point but reset in value.
+Fixed by resetting the values on page reload or saving their values accross page load.
+
+15 mins so far. 
+
+cleaned up hard and remove duplicut code, fixed some incorrect variables.  
+
+discovered issue with hard, its placing flags when it should not a because its not considering other flags
