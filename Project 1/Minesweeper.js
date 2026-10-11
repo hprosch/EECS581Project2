@@ -522,6 +522,14 @@ function newGame() {
 
 /*
 Algorithm for detecting a 1-2-1 pattern
+Goes over the entire board until it finds a 2 tile.
+When it does, it checks the squares right above and below it, seeing if it follows the 1-2-1, along with none being flagged
+If it follows the pattern, it flags the appropriate squares and clicks the tile between the flags, ending the turn.
+If none are found vertically, the function checks horizontally, where a similar process is followed.
+If none are found vertically, the function looks for the next 2 tile to check.
+If no 1-2-1 patterns are found in the entire board, the function just hands it off to medium difficulty
+
+- Function written on 10/6, comments written on 10/11, both by Forest Denton
  */
 function hard() {
         for (let i = 0; i < ROWS; i++) {
