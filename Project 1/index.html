@@ -7,7 +7,8 @@
 
         <style>
 
-            /* center the game on the page (rpm 10.10) */
+            /* center the game on the page (Ruben Pino-Martinez, 10/10/2026) */
+            /* Original page layout: Chris Brush, 10/7/2026; restyling: Ruben Pino-Martinez, 10/10/2026. */
             body {
                 display: flex;
                 flex-direction: column;
@@ -21,28 +22,28 @@
                 text-align: center;
             }
 
-            /* use the same sizing rules across the whole page (rpm 10.10) */
+            /* use the same sizing rules across the whole page (Ruben Pino-Martinez, 10/10/2026) */
             * {
                 box-sizing: border-box;
             }
 
-            /* keep everything in one centered area (rpm 10.10) */
+            /* keep everything in one centered area (Ruben Pino-Martinez, 10/10/2026) */
             .game-shell {
                 width: 100%;
                 max-width: 730px;
                 margin: 32px auto 48px;
             }
 
-            /* give the game title some space to breathe (rpm 10.10) */
+            /* give the game title some space to breathe (Ruben Pino-Martinez, 10/10/2026) */
             h1 {
                 margin: 0 0 24px;
                 font-size: 30px;
                 letter-spacing: -0.7px;
             }
 
-            /* group the game settings without taking up too much space (rpm 10.10) */
+            /* group the game settings without taking up too much space (Ruben Pino-Martinez, 10/10/2026) */
             /*
-            AI USE (by RPM): game layout cleanup
+            AI USE (by Ruben Pino-Martinez, 10/10/2026): game layout cleanup
             How/why AI was used:
             ChatGPT helped with a small visual cleanup of the running game
             after I shared screenshots and asked for a cleaner UI.
@@ -62,9 +63,9 @@
                 margin-bottom: 18px;
             }
 
-            /* keep the two sliders side by side (rpm 10.10) */
+            /* keep the two sliders side by side (Ruben Pino-Martinez, 10/10/2026) */
             /*
-              AI USE (by RPM): slider layout
+              AI USE (by Ruben Pino-Martinez, 10/10/2026): slider layout
               How/why AI was used:
               ChatGPT helped document the spacing used for the two setting sliders.
               AI-assisted section:
@@ -87,7 +88,7 @@
                 font-weight: 600;
             }
 
-            /* make the current slider value stand out a bit (rpm 10.10) */
+            /* make the current slider value stand out a bit (Ruben Pino-Martinez, 10/10/2026) */
             .setting label span {
                 color: #2463b3;
                 font-weight: 700;
@@ -101,9 +102,9 @@
                 cursor: pointer;
             }
 
-            /* put the game modes together so they're easier to find (rpm 10.10) */
+            /* put the game modes together so they're easier to find (Ruben Pino-Martinez, 10/10/2026) */
             /*
-            AI USE (by RPM): game mode controls
+            AI USE (by Ruben Pino-Martinez, 10/10/2026): game mode controls
             How/why AI was used:
             ChatGPT helped organize the mode buttons so the options were
             easier to scan without changing what each button does.
@@ -117,7 +118,7 @@
                 gap: 9px;
             }
 
-            /* give the buttons a consistent look (rpm 10.10) */
+            /* give the buttons a consistent look (Ruben Pino-Martinez, 10/10/2026) */
             button {
                 min-height: 39px;
                 padding: 9px 13px;
@@ -132,13 +133,13 @@
                 transition: background-color 120ms ease, border-color 120ms ease;
             }
 
-            /* lightly highlight a button when the mouse is over it (rpm 10.10) */
+            /* lightly highlight a button when the mouse is over it (Ruben Pino-Martinez, 10/10/2026) */
             button:hover {
                 background: #edf4ff;
             }
-            /* show which control is selected when using the keyboard (rpm 10.10) */
+            /* show which control is selected when using the keyboard (Ruben Pino-Martinez, 10/10/2026) */
             /*
-              AI USE (by RPM): keyboard focus styling
+              AI USE (by Ruben Pino-Martinez, 10/10/2026): keyboard focus styling
               How/why AI was used:
               ChatGPT helped explain why the keyboard focus outline is included.
               AI-assisted section:
@@ -150,7 +151,7 @@
                 outline-offset: 2px;
             }
 
-            /* make the regular player mode easier to notice (rpm 10.10) */
+            /* make the regular player mode easier to notice (Ruben Pino-Martinez, 10/10/2026) */
             .mode-buttons button:first-child {
                 background: #326cbd;
                 color: #ffffff;
@@ -160,7 +161,7 @@
                 background: #265da9;
             }
 
-            /* give the reveal ability its own button color (rpm 10.10) */
+            /* give the reveal ability its own button color (Ruben Pino-Martinez, 10/10/2026) */
             #revealButton {
                 margin-top: 11px;
             }
@@ -185,13 +186,13 @@
                 font-weight: 700;
             }
 
-            /* hide this message area when there is nothing to say (rpm 10.10) */
+            /* hide this message area when there is nothing to say (Ruben Pino-Martinez, 10/10/2026) */
             #status:empty {
                 display: none;
             }
 
             /*
-              AI USE (by RPM): game status message
+              AI USE (by Ruben Pino-Martinez, 10/10/2026): game status message
               How/why AI was used:
               ChatGPT helped explain the UI treatment of win and loss messages.
               AI-assisted section:
@@ -206,9 +207,9 @@
                 color: #275b9b;
             }
 
-            /* show the timer and flags side by side (rpm 10.10) */
+            /* show the timer and flags side by side (Ruben Pino-Martinez, 10/10/2026) */
             /*
-            AI USE (by RPM): timer and flag display
+            AI USE (by Ruben Pino-Martinez, 10/10/2026): timer and flag display
             How/why AI was used:
             ChatGPT helped place the existing game stats in a cleaner layout
             so the timer and remaining flags were easier to read.
@@ -222,7 +223,7 @@
                 margin-bottom: 23px;
             }
 
-            /* stack the label above each game stat (rpm 10.10) */
+            /* stack the label above each game stat (Ruben Pino-Martinez, 10/10/2026) */
             .stat {
                 display: flex;
                 flex-direction: column;
@@ -242,9 +243,9 @@
                 font-variant-numeric: tabular-nums;
             }
 
-            /* allow the board to scroll if it gets too wide (rpm 10.10) */
+            /* allow the board to scroll if it gets too wide (Ruben Pino-Martinez, 10/10/2026) */
             /*
-              AI USE (by RPM): board scrolling
+              AI USE (by Ruben Pino-Martinez, 10/10/2026): board scrolling
               How/why AI was used:
               ChatGPT helped document how the board can stay usable on narrower screens.
               AI-assisted section:
@@ -256,7 +257,8 @@
                 padding: 0 0 4px;
             }
 
-            /* keep the board cells together (rpm 10.10) */
+            /* keep the board cells together (Ruben Pino-Martinez, 10/10/2026) */
+            /* Existing table layout rules: Chris Brush, 10/7/2026; updated board styles: Ruben Pino-Martinez, 10/10/2026. */
             table {
                 border-collapse: collapse;
                 margin: 0 auto;
@@ -277,7 +279,8 @@
                 text-align: right;
             }
 
-            /* set the size and look of each tile (rpm 10.10) */
+            /* set the size and look of each tile (Ruben Pino-Martinez, 10/10/2026) */
+            /* Existing tile sizing/interaction rules: Chris Brush, 10/7/2026; revised styling: Ruben Pino-Martinez, 10/10/2026. */
             td {
                 width: 46px;
                 min-width: 46px;
@@ -292,22 +295,23 @@
                 transition: background-color 100ms ease;
             }
 
-            /* highlight a tile before the player clicks it (rpm 10.10) */
+            /* highlight a tile before the player clicks it (Ruben Pino-Martinez, 10/10/2026) */
             #board td:hover:not(.revealed):not(.aiHit) {
                 background: #dceafa;
             }
 
-            /* shade tiles that have been opened (rpm 10.10) */
+            /* shade tiles that have been opened (Ruben Pino-Martinez, 10/10/2026) */
+            /* Original revealed-tile CSS: Chris Brush, 10/7/2026; revised color: Ruben Pino-Martinez, 10/10/2026. */
             .revealed {
                 background: #d9e2ed;
             }
 
-            /* make the mine the ai hit stand out (rpm 10.10) */
+            /* make the mine the ai hit stand out (Ruben Pino-Martinez, 10/10/2026) */
             .aiHit {
                 background: #253349;
             }
 
-            /* keep the two mouse instructions neatly below the board (rpm 10.10) */
+            /* keep the two mouse instructions neatly below the board (Ruben Pino-Martinez, 10/10/2026) */
             .instructions {
                 display: flex;
                 flex-wrap: wrap;
@@ -322,9 +326,9 @@
                 color: #38465c;
             }
 
-            /* keep the controls and board usable on smaller screens (rpm 10.10) */
+            /* keep the controls and board usable on smaller screens (Ruben Pino-Martinez, 10/10/2026) */
             /*
-            AI USE (by RPM): small-screen layout
+            AI USE (by Ruben Pino-Martinez, 10/10/2026): small-screen layout
             How/why AI was used:
             ChatGPT suggested CSS adjustments to keep the controls and board
             usable when the screen is narrower.
@@ -373,6 +377,8 @@
         <main class="game-shell">
             <h1>Minesweeper</h1>
 
+            <!-- Original slider values/actions: Chris Brush, 10/7/2026, except Wyatt Payne's credited difficulty slider (9/29/2026). -->
+            <!-- New controls layout: Ruben Pino-Martinez, 10/10/2026. -->
             <section class="controls" aria-label="Game settings">
                 <div class="settings-grid">
                     <div class="setting">
@@ -391,29 +397,33 @@
                             oninput="document.getElementById('difficulty').textContent = updateDifficulty()">
                     </div>
                 </div>
-                <!-- let the player pick which game mode to start (rpm 10.10) -->
+                <!-- let the player pick which game mode to start (Ruben Pino-Martinez, 10/10/2026) -->
+                <!-- Existing mode button actions carried over from Chris Brush's 10/7/2026 version. -->
+                <!-- New grouping and presentation: Ruben Pino-Martinez, 10/10/2026. -->
                 <div class="mode-buttons">
                     <button onclick="userPlayer()">New Game: User Player</button>
                     <button onclick="tagTeam()">New Game: Tag-Team</button>
                     <button onclick="aiPlayer()">New Game: AI Player</button>
                 </div>
-                <!-- use the one-time 3x3 reveal ability (rpm 10.10) -->
+                <!-- use the one-time 3x3 reveal ability (Ruben Pino-Martinez, 10/10/2026) -->
                 <button id="revealButton" onclick="activateRevealAbility()">Use 3x3 Reveal</button>
-                <!-- remind players when the new settings actually apply (rpm 10.10) -->
+                <!-- remind players when the new settings actually apply (Ruben Pino-Martinez, 10/10/2026) -->
                 <p class="setting-note">Mines and difficulty apply when you start a new game.</p>
             </section>
 
+            <!-- Original status, timer, flag counter, and board elements: Chris Brush, 10/7/2026. -->
+            <!-- Updated organization and visual styling: Ruben Pino-Martinez, 10/10/2026. -->
             <section class="game-panel" aria-label="Minesweeper board">
-                <!-- display win or loss messages here (rpm 10.10) -->
+                <!-- display win or loss messages here (Ruben Pino-Martinez, 10/10/2026) -->
                 <p id="status" role="status" aria-live="polite"></p>
                 <div class="stats">
-                    <!-- display how long the game has been running (rpm 10.10) -->
+                    <!-- display how long the game has been running (Ruben Pino-Martinez, 10/10/2026) -->
                     <div class="stat"><span class="stat-label">Game time</span><span class="stat-value" id="timer">00:00</span></div>
-                    <!-- show how many flags the player has left (rpm 10.10) -->
+                    <!-- show how many flags the player has left (Ruben Pino-Martinez, 10/10/2026) -->
                     <div class="stat"><span class="stat-label">Flags remaining</span><span class="stat-value" id="flagCount">0</span></div>
                 </div>
                 <div class="board-wrap">
-                    <!-- javascript will build the board inside this table (rpm 10.10) -->
+                    <!-- javascript will build the board inside this table (Ruben Pino-Martinez, 10/10/2026) -->
                     <table id="board"></table>
                 </div>
                 <p class="instructions"><span><b>Left click:</b> Reveal cell</span><span><b>Right click:</b> Flag/unflag cell</span></p>
@@ -421,10 +431,11 @@
 
         </main>
 
-        <!-- load the game functions from the javascript file (rpm 10.10) -->
+        <!-- load the game functions from the javascript file (Ruben Pino-Martinez, 10/10/2026) -->
         <script src="Minesweeper.js"></script>
     </body>
 
+        <!-- Reload-time slider sync is new compared with the 10/7/2026 version; author/date not verified. -->
     <script>
         // run when the page is fully loaded
         document.addEventListener("DOMContentLoaded", function () {
@@ -438,7 +449,7 @@
                 // fixes inacurate mine count on reload
                 document.getElementById('mineCount').textContent = document.getElementById("mineSlider").value;
             }
-            // put the sliders back to their starting values when reset is on (rpm 10.10)
+            // put the sliders back to their starting values when reset is on (Ruben Pino-Martinez, 10/10/2026)
             else {
                 document.getElementById('difficultySlider').value = "0";
                 document.getElementById("mineSlider").value = 10;

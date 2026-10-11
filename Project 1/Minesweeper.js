@@ -1,17 +1,21 @@
-// set the size of the minesweeper board (rpm 10.10)
+// set the size of the minesweeper board (documented by Ruben Pino-Martinez, 10/10/2026)
+// Original board-size constants: Chris Brush, 10/7/2026.
 var ROWS = 10;
 var COLS = 10;
 var MAX_MINES = 20;
 var MIN_MINES = 10;
-// keep track of the game and who is playing (rpm 10.10)
+// keep track of the game and who is playing (documented by Ruben Pino-Martinez, 10/10/2026)
+// Original game-state setup: Chris Brush, 10/7/2026; new AI state has unverified authorship.
 var firstTurn = true;
 var board, mineGrid, flagGrid, gameOver, winState, tag, ai, difficulty;
-// track the game timer and the 3x3 reveal ability (rpm 10.10)
+// track the game timer and the 3x3 reveal ability (documented by Ruben Pino-Martinez, 10/10/2026)
+// Timer/reveal-ability state existed in the 10/7 version; stopwatch and reveal functionality are credited to the Project 2 team (10/5/2026).
 var stopwatchInterval,
         stopwatchStart,
         revealAbilityAvailable,
         revealAbilityActive;
 
+// Fill unrevealed cells with the initial value 9. Original code: Chris Brush, 10/7/2026.
 function initializeBoard(board) {
         //go thorugh every row and col, populating the board with 9s
         for (let row = 0; row < ROWS; row++) {
@@ -21,6 +25,7 @@ function initializeBoard(board) {
         }
         return board;
 }
+// Clear the mine map before placing mines. Original code: Chris Brush, 10/7/2026.
 function initializeMineGrid(mineGrid) {
         //go thorugh every row and col, populating the board with false
         for (let row = 0; row < ROWS; row++) {
@@ -31,6 +36,7 @@ function initializeMineGrid(mineGrid) {
         return mineGrid;
 }
 
+// Clear all flags before each new game. Original code: Chris Brush, 10/7/2026.
 function initializeFlagGrid(flagGrid) {
         //go thorugh every row and col, populating the board with false
         for (let row = 0; row < ROWS; row++) {
@@ -41,11 +47,12 @@ function initializeFlagGrid(flagGrid) {
         return flagGrid;
 }
 
-// randomly put the chosen number of mines on the board (rpm 10.10)
+// randomly put the chosen number of mines on the board (documented by Ruben Pino-Martinez, 10/10/2026)
+// Original random mine-placement logic: Chris Brush, 10/7/2026.
 function placeMines(mineGrid, mineCount) {
         let placedMines = 0;
 
-        // keep picking spots until all the mines are placed (rpm 10.10)
+        // keep picking spots until all the mines are placed (documented by Ruben Pino-Martinez, 10/10/2026)
         while (placedMines < mineCount) {
                 let row = Math.floor(Math.random() * ROWS); //get random row number
                 let col = Math.floor(Math.random() * COLS); //ger random column number
@@ -59,7 +66,8 @@ function placeMines(mineGrid, mineCount) {
         return mineGrid;
 }
 
-// figure out what happens when a tile gets revealed (rpm 10.10)
+// figure out what happens when a tile gets revealed (documented by Ruben Pino-Martinez, 10/10/2026)
+// Original adjacent-mine counting, first-turn protection, and empty-area reveal: Chris Brush, 10/7/2026.
 function revealTile(board, mineGrid, row, col) {
         let adjacentMines = 0;
         if (mineGrid[row][col]) {
@@ -106,6 +114,7 @@ function revealTile(board, mineGrid, row, col) {
         return 0; // Nothing Occured.
 }
 
+// Check whether all non-mine tiles have been revealed. Original code: Chris Brush, 10/7/2026.
 function checkWin(board, mineGrid) {
         //Goes through the board to see if every non-mine cell has been revealed, signifying a win
         for (let row = 0; row < ROWS; row++) {
@@ -118,7 +127,8 @@ function checkWin(board, mineGrid) {
         return true; //If every non-mine cell has been revealed, the game has been won
 }
 
-// place or remove a flag on an unopened tile (rpm 10.10)
+// place or remove a flag on an unopened tile (documented by Ruben Pino-Martinez, 10/10/2026)
+// Original flag toggling and mine-count limit: Chris Brush, 10/7/2026.
 function flagCell(flagGrid, board, row, col) {
         if (board[row][col] != 9) {
                 console.log("Invalid flag placement. Place flag on unrevealed tile");
@@ -147,7 +157,8 @@ function flagCell(flagGrid, board, row, col) {
         return flagGrid;
 }
 
-// update the number of flags left on the screen (rpm 10.10)
+// update the number of flags left on the screen (documented by Ruben Pino-Martinez, 10/10/2026)
+// Original remaining-flags display logic: Chris Brush, 10/7/2026.
 function updateFlagCount() {
         let placedFlags = 0;
 
@@ -174,13 +185,15 @@ function updateStopwatch() {
         document.getElementById("timer").textContent = minutes + ":" + seconds;
 }
 
-// stop the timer once the game is finished (rpm 10.10)
+// stop the timer once the game is finished (documented by Ruben Pino-Martinez, 10/10/2026)
+// Stopwatch helper already in 10/7 version; Project 2 team timer credit: 10/5/2026.
 function stopStopwatch() {
         clearInterval(stopwatchInterval);
         updateStopwatch();
 }
 
-// turn the 3x3 reveal mode on or off (rpm 10.10)
+// turn the 3x3 reveal mode on or off (documented by Ruben Pino-Martinez, 10/10/2026)
+// One-time 3x3 ability controls already in 10/7 version; Project 2 team credit: 10/5/2026.
 function activateRevealAbility() {
         if (gameOver || !revealAbilityAvailable) return;
         revealAbilityActive = !revealAbilityActive;
@@ -189,7 +202,8 @@ function activateRevealAbility() {
                 : "Use 3x3 Reveal";
 }
 
-// find the number for a safe tile revealed by the ability (rpm 10.10)
+// find the number for a safe tile revealed by the ability (documented by Ruben Pino-Martinez, 10/10/2026)
+// Computes numbers for tiles exposed by 3x3 reveal; Project 2 team ability credit: 10/5/2026.
 function revealAbilityTile(row, col) {
         let adjacentMines = 0;
         for (let rowPos = row - 1; rowPos <= row + 1; rowPos++) {
@@ -230,7 +244,7 @@ function revealAbility(row, col) {
                 }
         }
 
-        // mark the reveal ability as used so it cannot be used again (rpm 10.10)
+        // mark the reveal ability as used so it cannot be used again (documented by Ruben Pino-Martinez, 10/10/2026)
         firstTurn = false;
         revealAbilityAvailable = false;
         revealAbilityActive = false;
@@ -250,7 +264,9 @@ function revealAbility(row, col) {
 // Code chunk below replaces prompt-based input
 // ========================================================================================================================================
 
-// create the clickable board and its row and column labels (rpm 10.10)
+// create the clickable board and its row and column labels (documented by Ruben Pino-Martinez, 10/10/2026)
+// Original grid cells, labels, and click handlers: Chris Brush, 10/7/2026.
+// New AI-specific control additions in this version have no verified author/date.
 function buildGrid() {
         const gameBoard = document.getElementById("board");
         gameBoard.innerHTML = ""; // clear previous game
@@ -295,6 +311,7 @@ function buildGrid() {
                     handleReveal(row, col);
                     //Checks if the game is in Tag-Team mode, not won, not lost, and if the tile is not flagged and unrevealed
                     if(tag && !winState && !gameOver && !flagGrid[row][col] && check == 9){
+                        // New AI-turn tracker; author and implementation date not confirmed.
                         ai = true;
                         //If AI is in easy
                         if(difficulty == 0){
@@ -330,6 +347,8 @@ function buildGrid() {
         }
 }
 
+// Original board render and mine/flag display: Chris Brush, 10/7/2026.
+// New AI-hit display styling has no verified author/date.
 function render() {
         // Update the display based on current state of the board and flagGrid
         for (let row = 0; row < ROWS; row++) {
@@ -350,6 +369,7 @@ function render() {
             } else if (val === -1) {
                 td.textContent = '💥';
             // mine ai hit
+            // New AI-specific mine marker; author/date not confirmed.
             } else if (val === -2) {
                 td.className = 'aiHit';
                 td.textContent = '💥';
@@ -364,7 +384,9 @@ function render() {
     }
 }
 
-// show where the mines were after a loss (rpm 10.10)
+// show where the mines were after a loss (documented by Ruben Pino-Martinez, 10/10/2026)
+// Original reveal-all-mines function: Chris Brush, 10/7/2026.
+// AI-specific hit location handling was added later; author/date not verified.
 function revealAllMines(aiRow, aiCol) {
     for (let row = 0; row < ROWS; row++) {
         for (let col = 0; col < COLS; col++) {
@@ -380,7 +402,9 @@ function revealAllMines(aiRow, aiCol) {
     }
 }
 
-// handle a tile click and check if the game ended (rpm 10.10)
+// handle a tile click and check if the game ended (documented by Ruben Pino-Martinez, 10/10/2026)
+// Original tile reveal and game-over checks: Chris Brush, 10/7/2026.
+// Later AI-specific messages/handling have no verified author/date.
 function handleReveal(row, col) {
         if (gameOver) return;
         if (flagGrid[row][col]) {
@@ -414,6 +438,8 @@ function handleReveal(row, col) {
     }
 }
 
+// Original double-click neighboring-tile reveal: Chris Brush, 10/7/2026.
+// Later AI-specific status messages have no verified author/date.
 function handleDoubleReveal(row, col) {
         //Reveal surrounding tiles when a numbered tile is double-clicked
         if (gameOver) return;
@@ -471,7 +497,8 @@ function handleDoubleReveal(row, col) {
         }
 }
 
-// update the board and flag counter after a flag click (rpm 10.10)
+// update the board and flag counter after a flag click (documented by Ruben Pino-Martinez, 10/10/2026)
+// Original flag click handler and counter refresh: Chris Brush, 10/7/2026.
 function handleFlag(row, col) {
         if (gameOver) return;
         flagGrid = flagCell(flagGrid, board, row, col); // Update the flagGrid
@@ -479,13 +506,15 @@ function handleFlag(row, col) {
         updateFlagCount();
 }
 
-// reset everything needed to start another game (rpm 10.10)
+// reset everything needed to start another game (documented by Ruben Pino-Martinez, 10/10/2026)
+// Original board reset and new-game setup: Chris Brush, 10/7/2026.
+// AI state reset was added later; author/date not verified.
 function newGame() {
     // Create 2D arrays for board, mineGrid, and flagGrid
     tag = false; //Automatically sets Tag-Team mode variable to false, will be set to true in tagTeam() function if Tag-Team mode is being played
     //Sets the ai varaible to false, will be set to true in AIPlayer and TagTeam modes when relevant
     ai = false;
-    // make new arrays for the tiles, mines, and flags (rpm 10.10)
+    // make new arrays for the tiles, mines, and flags (documented by Ruben Pino-Martinez, 10/10/2026)
     board = Array(ROWS);
     mineGrid = Array(ROWS);
     flagGrid = Array(ROWS);
@@ -501,25 +530,27 @@ function newGame() {
         let mineCount = Number(document.getElementById("mineSlider").value); // gets selected mine count
         mineGrid = placeMines(mineGrid, mineCount); // place selected number of mines (1-20)
 
-        // clear the old game results and reset the reveal ability (rpm 10.10)
+        // clear the old game results and reset the reveal ability (documented by Ruben Pino-Martinez, 10/10/2026)
         firstTurn = true;
         gameOver = false;
         winState = false;
         revealAbilityAvailable = true;
         revealAbilityActive = false;
         document.getElementById("revealButton").textContent = "Use 3x3 Reveal";
-        // restart the timer for the new game (rpm 10.10)
+        // restart the timer for the new game (documented by Ruben Pino-Martinez, 10/10/2026)
         stopwatchStart = Date.now();
         clearInterval(stopwatchInterval);
         stopwatchInterval = setInterval(updateStopwatch, 1000);
         updateStopwatch();
-        // redraw the board so the new game starts with hidden tiles (rpm 10.10)
+        // redraw the board so the new game starts with hidden tiles (documented by Ruben Pino-Martinez, 10/10/2026)
         buildGrid();
         render();
         updateFlagCount();
         document.getElementById("status").textContent = "";
 }
 
+// Hard-mode pattern recognition is new compared with the 10/7 version; main author/full name/date not confirmed.
+// The corner-handling subsection is explicitly credited below to Ian Ruebelmann (10/9/2026).
 /*
 Algorithm for detecting a 1-2-1 pattern
 Goes over the entire board until it finds a 2 tile.
@@ -668,7 +699,8 @@ function hard() {
                 }
         }
         // At this point, we know there is no 1-2-1 patterns, so we just pass it off to medium
-        // use the medium strategy if the hard pattern was not found (rpm 10.10)
+        // use the medium strategy if the hard pattern was not found (documented by Ruben Pino-Martinez, 10/10/2026)
+        // New hard-mode fallback logging; author/date not confirmed.
         console.log("passing to medium");
         medium();
 }
@@ -682,6 +714,7 @@ if we find no tiles that meet these rules, we just call the easy algorithm to re
 
 - function and comment written by Ian Ruebelmann on 9/30/2026 @ 11:25pm
 */
+// Medium AI rules and original explanation: Ian Ruebelmann, 9/30/2026.
 function medium() {
         for (let i = 0; i < ROWS; i++) {
                 for (let j = 0; j < COLS; j++) {
@@ -746,12 +779,14 @@ function medium() {
                         }
                 }
         }
-        // use a random move if the medium rules did not work (rpm 10.10)
+        // use a random move if the medium rules did not work (documented by Ruben Pino-Martinez, 10/10/2026)
+        // New medium-mode fallback logging; author/date not confirmed.
         console.log("Passing to easy");
         // If we find no valid tiles we just pick a random tile (easy)
         easy();
 }
 
+// Easy AI random-turn algorithm: Wyatt Payne, 9/29/2026 (existing inline credit retained).
 function easy() {
         /*Algorithm for taking one turn under the Easy Difficulty AI written by Wyatt Payne 9/29/26*/
         //Keep randomly choosing squares until a valid one reached
@@ -770,6 +805,8 @@ function easy() {
         }
 }
 
+// Original automatic AI game mode: Wyatt Payne, 9/29/2026.
+// Later AI-state and hard-mode changes: author/date not verified.
 function aiPlayer(){
 /*Game mode for AI gameplay written by Wyatt Payne 9/29/26*/
     //Resets the board and restarts the game
@@ -800,6 +837,7 @@ function aiPlayer(){
     }
 }
 
+// Original alternating human/AI mode: Wyatt Payne, 9/29/2026.
 function tagTeam() {
         /*Game mode for player and AI turn alternating written by Wyatt Payne 9/29/26*/
         //Resets the board and restarts the game
@@ -810,6 +848,7 @@ function tagTeam() {
         difficulty = Number(document.getElementById("difficultySlider").value);
 }
 
+// Original difficulty-slider label update: Wyatt Payne, 9/29/2026.
 function updateDifficulty() {
         /*Function for updating text on difficulty slider in index.html
   written by Wyatt Payne 9/29/26*/
@@ -821,13 +860,13 @@ function updateDifficulty() {
         return difficultyArray[difficulty];
 }
 
+// Original human-player start mode: Wyatt Payne, 9/29/2026.
 function userPlayer() {
         /*Game mode for single user player written by Wyatt Payne 9/29/26*/
         //Resets the board and restarts the game
         newGame();
 }
 
-// start a user game when the page first loads (rpm 10.10)
+// start a user game when the page first loads (documented by Ruben Pino-Martinez, 10/10/2026)
+// Initial game launch is present in Chris Brush's 10/7/2026 version.
 newGame();
-
-// ========================================================================================================================================
