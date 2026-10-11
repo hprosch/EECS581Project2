@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper</title>
+
+    <style>
+        /* center the game on the page (rpm 10.10) */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        /* keep the board cells together (rpm 10.10) */
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        /* set the size and look of each tile (rpm 10.10) */
+        td {
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            border: 1px solid black;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        /* shade tiles that have been opened (rpm 10.10) */
+        .revealed {
+            background: #ddd;
+        }
+
+        /* make the mine the ai hit stand out (rpm 10.10) */
+        .aiHit {
+            background: #000000;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Minesweeper</h1>
+    <!-- mine count -->
+    <label for="mineSlider">Mines: <span id="mineCount">10</span></label>
+    <!-- slider details -->
+    <input type="range" id="mineSlider" min="10" max="20" value="10"
+        oninput="document.getElementById('mineCount').textContent = this.value">
+    <!--AI Difficulty Slider-->
+    <!--Creates a slider that sets the difficulty of the AI player from 0-2 Easy-Hard
+        written by Wyatt Payne 9/29/26-->
+    <label for="difficultySlider">Difficulty: <span id="difficulty">Easy</span></label>
+    <input type="range" id="difficultySlider" min="0" max="2" value="0"
+        oninput="document.getElementById('difficulty').textContent = updateDifficulty()">
+    <!-- let the player pick which game mode to start (rpm 10.10) -->
+    <button onclick="userPlayer()">New Game: User Player</button>
+    <button onclick="tagTeam()">New Game: Tag-Team</button>
+    <button onclick="aiPlayer()">New Game: AI Player</button>
+    <!-- use the one-time 3x3 reveal ability (rpm 10.10) -->
+    <button id="revealButton" onclick="activateRevealAbility()">Use 3x3 Reveal</button>
+    <!-- display win or loss messages here (rpm 10.10) -->
+    <p id="status"></p>
+    <!-- display how long the game has been running (rpm 10.10) -->
+    <p>Game Time: <span id="timer">00:00</span></p>
+    <!-- show how many flags the player has left (rpm 10.10) -->
+    <p>Remaining Flags/Mines: <span id="flagCount">0</span></p>
+    <!-- javascript will build the board inside this table (rpm 10.10) -->
+    <table id="board"></table>
+
+    <p><b>Left Click:</b> Reveal Cell<br><b>Right Click:</b> Flag/Unflag Cell</p>
+
+    <!-- load the game functions from the javascript file (rpm 10.10) -->
+    <script src="Minesweeper.js"></script>
+</body>
+<script>
+    // run when the page is fully loaded
+    document.addEventListener("DOMContentLoaded", function () {
+        // set to true if you want to reset values on page reload
+        // false if you don't
+        let reset = false
+        // make sure values is properly initalized
+        if (!reset) {
+            // fixes innaccurate slider on reload
+            document.getElementById('difficulty').textContent = updateDifficulty();
+            // fixes inacurate mine count on reload
+            document.getElementById('mineCount').textContent = document.getElementById("mineSlider").value;
+        }
+        else {
+            document.getElementById('difficultySlider').value = "0";
+
+            document.getElementById("mineSlider").value = 10;
+            document.getElementById('difficulty').textContent = updateDifficulty();
+            document.getElementById('mineCount').textContent = document.getElementById("mineSlider").value;
+
+        }
+    });</script>
+
+</html>
