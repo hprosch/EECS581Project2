@@ -549,7 +549,6 @@ function newGame() {
         document.getElementById("status").textContent = "";
 }
 
-// Hard-mode pattern recognition is new compared with the 10/7 version; main author/full name/date not confirmed.
 // The corner-handling subsection is explicitly credited below to Ian Ruebelmann (10/9/2026).
 /*
 Algorithm for detecting a 1-2-1 pattern
